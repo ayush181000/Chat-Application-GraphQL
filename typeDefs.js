@@ -1,10 +1,13 @@
 import { gql } from 'apollo-server';
 
 const typeDefs = gql`
+  # query
   type Query {
     users: [User]
+    messagesByUser(receiverId: Int!): [Message]
   }
 
+  # input
   input UserInput {
     firstName: String!
     lastName: String!
@@ -17,13 +20,21 @@ const typeDefs = gql`
     password: String!
   }
 
+  # mutations
   type Mutation {
     signupUser(userNew: UserInput!): User
     signinUser(userSignin: UserSigninInput!): Token
+    createMessage(receiverId: Int!, text: String!): Message
   }
 
-  type Token {
-    token: String!
+  scalar Date
+
+  type Message {
+    id: ID!
+    text: String!
+    receiverId: ID!
+    senderId: ID!
+    createdAt: Date!
   }
 
   type User {
@@ -31,12 +42,9 @@ const typeDefs = gql`
     firstName: String!
     lastName: String!
     email: String!
-    todos: [Todo]
   }
-
-  type Todo {
-    title: String!
-    by: ID!
+  type Token {
+    token: String!
   }
 `;
 
