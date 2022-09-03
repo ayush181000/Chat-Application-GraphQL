@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   AppBar,
@@ -7,16 +7,30 @@ import {
   Typography,
   Avatar,
   TextField,
+  Stack,
 } from '@mui/material';
-import MessageCard from './MessageCard';
+import SendIcon from '@mui/icons-material/Send';
 import { GET_MSG } from '../graphql/query';
-import { useQuery } from '@apollo/client';
+import { SEND_MSG } from '../graphql/mutations';
+import { useMutation, useQuery } from '@apollo/client';
+import MessageCard from './MessageCard';
 
 const ChatScreen = () => {
   const { id, name } = useParams();
+  const [text, setText] = useState('');
+  const [messages, setMessages] = useState([]);
 
   const { data, loading, error } = useQuery(GET_MSG, {
     variables: { receiverId: +id },
+    onCompleted(data) {
+      setMessages(data.messagesByUser);
+    },
+  });
+
+  const [sendMessage] = useMutation(SEND_MSG, {
+    onCompleted(data) {
+      setMessages((prevMessages) => [...prevMessages, data.createMessage]);
+    },
   });
 
   return (
@@ -41,7 +55,7 @@ const ChatScreen = () => {
         {loading ? (
           <Typography variant='h6'>Loading chats</Typography>
         ) : (
-          data.messagesByUser.map((msg) => {
+          messages.map((msg) => {
             return (
               <MessageCard
                 key={msg.id}
@@ -53,13 +67,31 @@ const ChatScreen = () => {
           })
         )}
       </Box>
-      <TextField
-        placeholder='Enter a message'
-        variant='standard'
-        fullWidth
-        multiline
-        rows={2}
-      />
+      <Stack direction='row' justfyContent='space-between'>
+        <TextField
+          placeholder='Enter a message'
+          variant='standard'
+          fullWidth
+          multiline
+          rows={2}
+          value={text}
+          required
+          onChange={(e) => setText(e.target.value)}
+        />
+        <SendIcon
+          fontSize='large'
+          onClick={() => {
+            if (text != '')
+              sendMessage({
+                variables: {
+                  receiverId: +id,
+                  text: text,
+                },
+              });
+            setText('');
+          }}
+        />
+      </Stack>
     </Box>
   );
 };
