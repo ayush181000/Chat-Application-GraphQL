@@ -30,7 +30,7 @@ const SideBar = () => {
       </Stack>
       <Divider>
         {users.map((item) => {
-          return <UserCard item={item} />;
+          return <UserCard key={item.id} item={item} />;
         })}
       </Divider>
     </Box>
