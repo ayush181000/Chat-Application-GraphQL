@@ -9,7 +9,9 @@ const MessageCard = ({ text, date, direction }) => {
           {text}
         </Typography>
 
-        <Typography variant='caption'>{date}</Typography>
+        <Typography variant='caption'>
+          {new Date(date).toLocaleTimeString()}
+        </Typography>
       </Box>
     </Box>
   );

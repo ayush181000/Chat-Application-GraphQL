@@ -9,9 +9,15 @@ import {
   TextField,
 } from '@mui/material';
 import MessageCard from './MessageCard';
+import { GET_MSG } from '../graphql/query';
+import { useQuery } from '@apollo/client';
 
 const ChatScreen = () => {
   const { id, name } = useParams();
+
+  const { data, loading, error } = useQuery(GET_MSG, {
+    variables: { receiverId: +id },
+  });
 
   return (
     <Box flexGrow='1'>
@@ -32,8 +38,20 @@ const ChatScreen = () => {
         padding='10px'
         sx={{ overflowY: 'auto' }}
       >
-        <MessageCard text='hi mukesh' date='1223' direction={'start'} />
-        <MessageCard text='hi mukesh' date='1223' direction={'end'} />
+        {loading ? (
+          <Typography variant='h6'>Loading chats</Typography>
+        ) : (
+          data.messagesByUser.map((msg) => {
+            return (
+              <MessageCard
+                key={msg.id}
+                text={msg.text}
+                date={msg.createdAt}
+                direction={msg.receiverId == +id ? 'end' : 'start'}
+              />
+            );
+          })
+        )}
       </Box>
       <TextField
         placeholder='Enter a message'

@@ -23,11 +23,10 @@ const SideBar = ({ setLoggedIn }) => {
           }}
         />
       </Stack>
-      <Divider>
-        {data.users.map((item) => {
-          return <UserCard key={item.id} item={item} />;
-        })}
-      </Divider>
+      <Divider />
+      {data.users.map((item) => {
+        return <UserCard key={item.id} item={item} />;
+      })}
     </Box>
   );
 };
