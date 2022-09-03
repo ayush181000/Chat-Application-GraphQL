@@ -10,16 +10,25 @@ import {
   Alert,
 } from '@mui/material';
 import { useMutation } from '@apollo/client';
-import { SIGNUP_USER } from '../graphql/mutations';
+import { SIGNUP_USER, LOGIN_USER } from '../graphql/mutations';
 
-const AuthScreen = () => {
+const AuthScreen = ({ setLoggedIn }) => {
   const [showLogin, setShowLogin] = useState(true);
   const [formData, setFormData] = useState({});
   const authForm = useRef(null);
   const [signupUser, { data: signupData, loading: l1, error: e1 }] =
     useMutation(SIGNUP_USER);
+  const [loginUser, { data: loginData, loading: l2, error: e2 }] = useMutation(
+    LOGIN_USER,
+    {
+      onCompleted(data) {
+        localStorage.setItem('jwt', data.signinUser.token);
+        setLoggedIn(true);
+      },
+    }
+  );
 
-  if (l1) {
+  if (l1 || l2) {
     return (
       <Box
         display='flex'
@@ -45,13 +54,14 @@ const AuthScreen = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (showLogin) {
-      // sign in user
-    } else {
-      signupUser({
+      console.log('here');
+      loginUser({
         variables: {
-          userNew: formData,
+          userSignin: formData,
         },
       });
+    } else {
+      signupUser({ variables: { userNew: formData } });
     }
   };
 
@@ -73,6 +83,8 @@ const AuthScreen = () => {
             </Alert>
           )}
           {e1 && <Alert severity='error'>{e1.message} </Alert>}
+          {e2 && <Alert severity='error'>{e2.message} </Alert>}
+
           <Typography variant='h5'>
             Please {showLogin ? 'Login' : 'Signup'}
           </Typography>
