@@ -61,7 +61,7 @@ const ChatScreen = () => {
                 key={msg.id}
                 text={msg.text}
                 date={msg.createdAt}
-                direction={msg.receiverId == +id ? 'end' : 'start'}
+                direction={msg.receiverId === +id ? 'end' : 'start'}
               />
             );
           })
@@ -81,7 +81,7 @@ const ChatScreen = () => {
         <SendIcon
           fontSize='large'
           onClick={() => {
-            if (text != '')
+            if (text !== '')
               sendMessage({
                 variables: {
                   receiverId: +id,
