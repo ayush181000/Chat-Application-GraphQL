@@ -12,24 +12,28 @@ import {
 import SendIcon from '@mui/icons-material/Send';
 import { GET_MSG } from '../graphql/query';
 import { SEND_MSG } from '../graphql/mutations';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import MessageCard from './MessageCard';
+import { MSG_SUB } from '../graphql/subscriptions';
 
 const ChatScreen = () => {
   const { id, name } = useParams();
   const [text, setText] = useState('');
   const [messages, setMessages] = useState([]);
 
-  const { data, loading, error } = useQuery(GET_MSG, {
+  const { data, loading } = useQuery(GET_MSG, {
     variables: { receiverId: +id },
     onCompleted(data) {
       setMessages(data.messagesByUser);
     },
   });
 
-  const [sendMessage] = useMutation(SEND_MSG, {
-    onCompleted(data) {
-      setMessages((prevMessages) => [...prevMessages, data.createMessage]);
+  const [sendMessage] = useMutation(SEND_MSG);
+
+  useSubscription(MSG_SUB, {
+    onSubscriptionData({ subscriptionData: { data } }) {
+      console.log(data.messageAdded);
+      setMessages((prevMessages) => [...prevMessages, data.messageAdded]);
     },
   });
 
@@ -61,13 +65,13 @@ const ChatScreen = () => {
                 key={msg.id}
                 text={msg.text}
                 date={msg.createdAt}
-                direction={msg.receiverId === +id ? 'end' : 'start'}
+                direction={msg.receiverId == +id ? 'end' : 'start'}
               />
             );
           })
         )}
       </Box>
-      <Stack direction='row' justfyContent='space-between'>
+      <Stack direction='row' justfycontent='space-between'>
         <TextField
           placeholder='Enter a message'
           variant='standard'

@@ -7,6 +7,8 @@ import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
+const PORT = process.env.PORT || 4000;
+
 const app = express();
 
 const context = ({ req }) => {
@@ -25,7 +27,7 @@ const apolloServer = new ApolloServer({ schema, context });
 await apolloServer.start();
 apolloServer.applyMiddleware({ app, path: '/graphql' });
 
-const server = app.listen(4000, () => {
+const server = app.listen(PORT, () => {
   const wsServer = new WebSocketServer({
     server,
     path: '/graphql',
