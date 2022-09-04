@@ -27,6 +27,12 @@ const typeDefs = gql`
     createMessage(receiverId: Int!, text: String!): Message
   }
 
+  # subscriptions
+  type Subscription {
+    messageAdded: Message
+  }
+
+  # data types
   scalar Date
 
   type Message {
@@ -43,6 +49,7 @@ const typeDefs = gql`
     lastName: String!
     email: String!
   }
+
   type Token {
     token: String!
   }
