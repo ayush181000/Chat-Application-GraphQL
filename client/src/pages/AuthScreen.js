@@ -16,6 +16,7 @@ const AuthScreen = ({ setLoggedIn }) => {
   const [showLogin, setShowLogin] = useState(true);
   const [formData, setFormData] = useState({});
   const authForm = useRef(null);
+
   const [signupUser, { data: signupData, loading: l1, error: e1 }] =
     useMutation(SIGNUP_USER);
   const [loginUser, { data: loginData, loading: l2, error: e2 }] = useMutation(
